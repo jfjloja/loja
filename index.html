@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> JFJ Loja </title>
+    <title>Loja Moderna | Moda Premium</title>
 
     <!-- Google Fonts: Outfit (Clean, Modern) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1046,16 +1046,25 @@
         const phoneInput = document.getElementById('order-phone');
         if (phoneInput) {
             phoneInput.addEventListener('input', function (e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
+                // Remove non-digits
+                let raw = e.target.value.replace(/\D/g, '');
 
-                if (value.length > 2) {
-                    value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+                // Limit to 11 digits (DDD + 9 digits)
+                if (raw.length > 11) raw = raw.slice(0, 11);
+
+                let formatted = raw;
+
+                if (raw.length > 2) {
+                    // (XX) ...
+                    formatted = `(${raw.slice(0, 2)}) ${raw.slice(2)}`;
                 }
-                if (value.length > 7) {
-                    value = `${value.slice(0, 9)}-${value.slice(9)}`; // (XX) 9XXXX-XXXX
+
+                if (raw.length > 7) {
+                    // (XX) XXXXX-XXXX
+                    formatted = `(${raw.slice(0, 2)}) ${raw.slice(2, 7)}-${raw.slice(7)}`;
                 }
-                e.target.value = value;
+
+                e.target.value = formatted;
             });
         }
 
