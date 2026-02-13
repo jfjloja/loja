@@ -63,3 +63,30 @@ create policy "Allow public read"
   on public.orders
   for select
   using (true);
+
+-- =====================================================
+-- STORE SETTINGS TABLE (for store hours / emergency)
+-- =====================================================
+create table public.store_settings (
+  id uuid default gen_random_uuid() primary key,
+  emergency_closed boolean default false,
+  updated_at timestamp with time zone default now()
+);
+
+-- Insert the single settings row
+insert into public.store_settings (emergency_closed) values (false);
+
+-- Enable Row Level Security
+alter table public.store_settings enable row level security;
+
+-- Allow anyone to read settings
+create policy "Allow public read"
+  on public.store_settings
+  for select
+  using (true);
+
+-- Allow anyone to update settings (admin uses anon key)
+create policy "Allow public update"
+  on public.store_settings
+  for update
+  using (true);

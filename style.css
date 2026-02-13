@@ -495,6 +495,106 @@ footer {
 }
 
 
+/* --- Store Closed / Countdown Banners --- */
+.store-closed-banner {
+    background: #dc2626;
+    color: #fff;
+    padding: 16px 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: sticky;
+    top: var(--header-height);
+    z-index: 99;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+.store-closed-banner .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.store-closed-banner i {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.store-countdown-banner {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #1a1a1a;
+    padding: 14px 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: sticky;
+    top: var(--header-height);
+    z-index: 98;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    animation: countdown-pulse 2s ease-in-out infinite;
+}
+
+@keyframes countdown-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.85;
+    }
+}
+
+.store-countdown-banner .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.store-countdown-banner i {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* When both banners are visible, stack them */
+.store-closed-banner:not(.hidden)+.store-countdown-banner:not(.hidden) {
+    top: calc(var(--header-height) + 52px);
+}
+
+@media (max-width: 768px) {
+
+    .store-closed-banner,
+    .store-countdown-banner {
+        font-size: 0.85rem;
+        padding: 12px 0;
+        position: relative;
+        top: 0;
+    }
+
+    .store-closed-banner .container,
+    .store-countdown-banner .container {
+        flex-direction: column;
+        gap: 6px;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .store-closed-banner,
+    .store-countdown-banner {
+        font-size: 0.8rem;
+        padding: 10px 0;
+    }
+}
+
 /* --- Modal / Lightbox --- */
 .modal-overlay {
     position: fixed;
@@ -1598,17 +1698,17 @@ footer {
 
 /* Orders Tab - Green */
 .admin-tab[data-tab="orders"] {
-    background: #10B981;
+    background: #f59e0b;
 }
 
 .admin-tab[data-tab="orders"]:hover {
-    background: #059669;
+    background: #d97706;
     transform: translateY(-2px);
 }
 
 .admin-tab[data-tab="orders"].active {
-    background: #047857;
-    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+    background: #b45309;
+    box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4);
 }
 
 /* Tab Content */
@@ -2771,6 +2871,15 @@ footer {
         text-align: center;
     }
 
+    /* Emergency Button Mobile */
+    .btn-emergency {
+        padding: 6px 12px;
+        font-size: 0.78rem;
+        order: -1;
+        width: 100%;
+        justify-content: center;
+    }
+
     /* Admin Tabs Mobile */
     .admin-tabs {
         flex-direction: column;
@@ -2881,4 +2990,58 @@ footer {
 
 .image-upload-area {
     margin-top: 10px;
+}
+
+/* --- Emergency Toggle Button --- */
+.btn-emergency {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-emergency:hover {
+    background: #059669;
+    transform: scale(1.02);
+}
+
+.btn-emergency.emergency-active {
+    background: #dc2626;
+    animation: emergency-blink 1.5s ease-in-out infinite;
+}
+
+.btn-emergency.emergency-active:hover {
+    background: #b91c1c;
+}
+
+@keyframes emergency-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.btn-emergency.schedule-closed {
+    background: #6b7280;
+    animation: none;
+    cursor: default;
+    opacity: 0.85;
+}
+
+.btn-emergency.schedule-closed:hover {
+    background: #6b7280;
+    transform: none;
 }

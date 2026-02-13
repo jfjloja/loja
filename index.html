@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> JFJ Loja </title>
+    <title>Loja Moderna | Moda Premium</title>
 
     <!-- Google Fonts: Outfit (Clean, Modern) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,6 +58,22 @@
             </div>
         </div>
     </header>
+
+    <!-- STORE CLOSED BANNER -->
+    <div id="store-closed-banner" class="store-closed-banner hidden">
+        <div class="container">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="store-closed-msg"></span>
+        </div>
+    </div>
+
+    <!-- COUNTDOWN BANNER -->
+    <div id="store-countdown-banner" class="store-countdown-banner hidden">
+        <div class="container">
+            <i class="fa-solid fa-clock"></i>
+            <span id="store-countdown-msg"></span>
+        </div>
+    </div>
 
     <!-- Promotional Banner -->
     <section id="banner-section">
@@ -360,7 +376,9 @@
             cart: JSON.parse(localStorage.getItem('cart') || '[]'),
             sizeModal: {
                 activeProduct: null
-            }
+            },
+            storeOpen: true,
+            emergencyClosed: false
         };
 
         // --- MOCK DATA ---
@@ -386,6 +404,7 @@
             setupSizeModal();
             setupOrderForm();
             updateCartUI();
+            initStoreStatus();
         });
 
         // --- CAROUSEL LOGIC ---
@@ -633,11 +652,11 @@
                     <h3 class="card-title">${p.name}</h3>
                     <div class="card-price">${price}</div>
                     <div class="card-sizes">${sizes}</div>
-                    <button class="btn-whatsapp btn-add-cart ${isOutOfStock ? 'disabled-btn' : ''}" 
+                    <button class="btn-whatsapp btn-add-cart ${isOutOfStock || !state.storeOpen ? 'disabled-btn' : ''}" 
                         data-product-id="${p.id}" 
-                        ${isOutOfStock ? 'disabled' : ''}>
-                        <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-cart-plus'}"></i> 
-                        <span class="btn-text">${isOutOfStock ? 'Esgotado' : 'Adicionar ao Carrinho'}</span>
+                        ${isOutOfStock || !state.storeOpen ? 'disabled' : ''}>
+                        <i class="fa-solid ${isOutOfStock ? 'fa-ban' : (!state.storeOpen ? 'fa-lock' : 'fa-cart-plus')}"></i> 
+                        <span class="btn-text">${isOutOfStock ? 'Esgotado' : (!state.storeOpen ? 'Loja Fechada' : 'Adicionar ao Carrinho')}</span>
                     </button>
                 </div>
             `;
@@ -715,6 +734,11 @@
                     buyEl.disabled = true;
                     buyEl.classList.add('disabled-btn');
                     buyEl.innerHTML = '<i class="fa-solid fa-ban"></i> Esgotado';
+                    buyEl.onclick = null;
+                } else if (!state.storeOpen) {
+                    buyEl.disabled = true;
+                    buyEl.classList.add('disabled-btn');
+                    buyEl.innerHTML = '<i class="fa-solid fa-lock"></i> Loja Fechada';
                     buyEl.onclick = null;
                 } else {
                     buyEl.disabled = false;
@@ -838,6 +862,11 @@
         }
 
         function openSizeModal(product) {
+            // Block if store is closed
+            if (!state.storeOpen) {
+                return;
+            }
+
             state.sizeModal.activeProduct = product;
             const modal = document.getElementById('size-modal');
             const productName = document.getElementById('size-modal-product');
@@ -1071,6 +1100,12 @@
         async function submitOrder(e) {
             e.preventDefault();
 
+            // Block if store is closed
+            if (!state.storeOpen) {
+                showOrderError('A loja está fechada para pedidos neste momento.');
+                return;
+            }
+
             const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
 
             if (totalItems < CONFIG.minOrderItems) {
@@ -1161,6 +1196,180 @@
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Pedido';
+            }
+        }
+
+        // =====================================================
+        // STORE HOURS & SCHEDULE LOGIC
+        // =====================================================
+
+        let storeStatusInterval = null;
+        let countdownInterval = null;
+
+        async function initStoreStatus() {
+            await updateStoreUI();
+            // Re-check every 60 seconds
+            storeStatusInterval = setInterval(updateStoreUI, 60000);
+        }
+
+        async function updateStoreUI() {
+            const status = getScheduleStatus();
+            let emergencyClosed = false;
+
+            // Check emergency flag from Supabase
+            try {
+                if (typeof supabase !== 'undefined' && CONFIG.supabaseUrl.includes('supabase.co')) {
+                    const client = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
+                    const { data, error } = await client
+                        .from('store_settings')
+                        .select('emergency_closed')
+                        .limit(1)
+                        .single();
+
+                    if (!error && data) {
+                        emergencyClosed = data.emergency_closed === true;
+                    }
+                }
+            } catch (err) {
+                console.warn('Could not check emergency status:', err);
+            }
+
+            state.emergencyClosed = emergencyClosed;
+
+            const closedBanner = document.getElementById('store-closed-banner');
+            const closedMsg = document.getElementById('store-closed-msg');
+            const countdownBanner = document.getElementById('store-countdown-banner');
+            const countdownMsg = document.getElementById('store-countdown-msg');
+
+            // Determine final store state
+            const wasOpen = state.storeOpen;
+
+            if (emergencyClosed) {
+                // EMERGENCY CLOSED
+                state.storeOpen = false;
+                if (closedMsg) closedMsg.textContent = 'Não estamos aceitando pedidos neste momento. Volte mais tarde ou entre em contato com nosso atendimento pelo WhatsApp disponível nesta página.';
+                if (closedBanner) closedBanner.classList.remove('hidden');
+                if (countdownBanner) countdownBanner.classList.add('hidden');
+                stopCountdown();
+            } else if (!status.isOpen) {
+                // SCHEDULE CLOSED
+                state.storeOpen = false;
+                if (closedMsg) closedMsg.textContent = 'Aceitamos pedidos de Segunda a Quinta normalmente e, na Sexta-feira, somente até às 10h da manhã. Não há atendimento aos sábados e domingos. Se tiver qualquer dúvida sobre o seu pedido, entre em contato com nosso atendimento pelo WhatsApp disponível neste site.';
+                if (closedBanner) closedBanner.classList.remove('hidden');
+                if (countdownBanner) countdownBanner.classList.add('hidden');
+                stopCountdown();
+            } else {
+                // OPEN
+                state.storeOpen = true;
+                if (closedBanner) closedBanner.classList.add('hidden');
+
+                // Check countdown (within 5 hours of closing)
+                if (status.hoursUntilClose !== null && status.hoursUntilClose <= 5) {
+                    if (countdownBanner) countdownBanner.classList.remove('hidden');
+                    startCountdown(status.closeTime);
+                } else {
+                    if (countdownBanner) countdownBanner.classList.add('hidden');
+                    stopCountdown();
+                }
+            }
+
+            // Re-render grid if state changed
+            if (wasOpen !== state.storeOpen) {
+                renderGrid();
+            }
+
+            // Update checkout button
+            const checkoutBtn = document.getElementById('btn-checkout');
+            if (checkoutBtn && !state.storeOpen) {
+                checkoutBtn.disabled = true;
+            }
+        }
+
+        function getScheduleStatus() {
+            // Get current time in UTC-3 (America/Sao_Paulo)
+            const now = new Date();
+            const brTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+
+            const day = brTime.getDay(); // 0=Sun, 1=Mon, ... 5=Fri, 6=Sat
+            const hours = brTime.getHours();
+            const minutes = brTime.getMinutes();
+            const currentMinutes = hours * 60 + minutes;
+
+            // Store is OPEN: Monday (1) 00:00 to Friday (5) 10:00
+            // Store is CLOSED: Friday (5) 10:01 to Sunday (0) 23:59
+            let isOpen = false;
+            let hoursUntilClose = null;
+            let closeTime = null;
+
+            if (day >= 1 && day <= 4) {
+                // Monday to Thursday: fully open
+                isOpen = true;
+
+                // Calculate hours until Friday 10:00 AM
+                const daysUntilFriday = 5 - day;
+                const minutesUntilClose = (daysUntilFriday * 24 * 60) + (10 * 60) - currentMinutes;
+                hoursUntilClose = minutesUntilClose / 60;
+
+                // Close time for countdown
+                closeTime = new Date(brTime);
+                closeTime.setDate(closeTime.getDate() + daysUntilFriday);
+                closeTime.setHours(10, 0, 0, 0);
+            } else if (day === 5) {
+                // Friday
+                if (currentMinutes <= 600) { // 10:00 = 600 minutes
+                    isOpen = true;
+                    const minutesUntilClose = 600 - currentMinutes;
+                    hoursUntilClose = minutesUntilClose / 60;
+
+                    closeTime = new Date(brTime);
+                    closeTime.setHours(10, 0, 0, 0);
+                } else {
+                    isOpen = false;
+                }
+            } else {
+                // Saturday (6) or Sunday (0): closed
+                isOpen = false;
+            }
+
+            return { isOpen, hoursUntilClose, closeTime };
+        }
+
+        function startCountdown(closeTime) {
+            stopCountdown();
+            updateCountdownDisplay(closeTime);
+            countdownInterval = setInterval(() => updateCountdownDisplay(closeTime), 1000);
+        }
+
+        function stopCountdown() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+        }
+
+        function updateCountdownDisplay(closeTime) {
+            const now = new Date();
+            const brNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+            const diff = closeTime - brNow;
+
+            if (diff <= 0) {
+                // Time's up — trigger a full re-check
+                stopCountdown();
+                updateStoreUI();
+                return;
+            }
+
+            const totalMinutes = Math.floor(diff / 60000);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+
+            const countdownMsg = document.getElementById('store-countdown-msg');
+            if (countdownMsg) {
+                if (hours > 0) {
+                    countdownMsg.textContent = `Faltam ${hours}h ${minutes}min para encerrar os pedidos da semana. Garanta já o seu!`;
+                } else {
+                    countdownMsg.textContent = `Faltam ${minutes} minutos para encerrar os pedidos da semana. Garanta já o seu!`;
+                }
             }
         }
     </script>
