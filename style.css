@@ -661,9 +661,9 @@ footer {
 }
 
 .modal-close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
     background: #EF4444;
     color: white;
     border: none;
@@ -672,7 +672,7 @@ footer {
     border-radius: 50%;
     font-size: 1.1rem;
     cursor: pointer;
-    z-index: 100;
+    z-index: 2100;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -810,10 +810,9 @@ footer {
     }
 
     .modal-close {
-        top: 15px;
-        right: 15px;
-        background: rgba(0, 0, 0, 0.3);
-        /* Visible on light images */
+        top: 20px;
+        right: 20px;
+        background: #EF4444;
     }
 }
 
