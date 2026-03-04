@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> JFJ|Loja</title>
+    <title>Loja Moderna | Moda Premium</title>
 
     <!-- Google Fonts: Outfit (Clean, Modern) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -219,10 +219,13 @@
         <div class="modal-content">
             <button class="modal-close" id="close-modal"><i class="fa-solid fa-xmark"></i></button>
 
-            <div class="modal-gallery">
+            <div class="modal-gallery" id="modal-gallery">
                 <button class="modal-nav nav-prev" id="modal-prev"><i class="fa-solid fa-chevron-left"></i></button>
                 <img src="" alt="Produto" class="modal-image" id="modal-img">
                 <button class="modal-nav nav-next" id="modal-next"><i class="fa-solid fa-chevron-right"></i></button>
+
+                <div class="zoom-lens" id="zoom-lens"></div>
+                <button class="zoom-toggle-btn" id="zoom-toggle"><i class="fa-solid fa-magnifying-glass"></i></button>
 
                 <div class="modal-dots" id="modal-dots">
                     <!-- Dots injected via JS -->
@@ -400,6 +403,7 @@
             initData();
             setupFilters();
             setupModal();
+            setupZoom();
             setupCart();
             setupSizeModal();
             setupOrderForm();
@@ -638,7 +642,7 @@
                 badgeHTML = `<div class="badge-out">Esgotado</div>`;
             } else if (isOnSale) {
                 badgeHTML = `<div class="badge-sale">Promoção</div>`;
-            } else if (p.is_new) {
+            } else if (p.is_new && !isNewSection) {
                 badgeHTML = `<div class="badge-new">NOVO</div>`;
             }
 
@@ -761,6 +765,7 @@
             const modal = document.getElementById('product-modal');
             if (modal) modal.classList.remove('open');
             document.body.style.overflow = '';
+            resetZoom();
         }
 
         function changeImage(dir) {
@@ -808,6 +813,161 @@
                     `<div class="modal-dot ${i === idx ? 'active' : ''}" onclick="state.modal.currentImageIndex = ${i}; updateModalImage()"></div>`
                 ).join('') : '';
             }
+
+            // Reset zoom when switching images
+            resetZoom();
+        }
+
+        // --- ZOOM / MAGNIFIER LOGIC ---
+        function resetZoom() {
+            const gallery = document.getElementById('modal-gallery');
+            const img = document.getElementById('modal-img');
+            const toggleBtn = document.getElementById('zoom-toggle');
+            if (gallery) gallery.classList.remove('zoomed');
+            if (img) {
+                img.style.transform = '';
+                img.style.transformOrigin = '';
+            }
+            if (toggleBtn) toggleBtn.classList.remove('active');
+        }
+
+        function setupZoom() {
+            const gallery = document.getElementById('modal-gallery');
+            const img = document.getElementById('modal-img');
+            const toggleBtn = document.getElementById('zoom-toggle');
+
+            if (!gallery || !img) return;
+
+            const ZOOM_LEVEL = 2.5;
+            let isMobile = window.matchMedia('(max-width: 768px)').matches;
+            let mobileZoomed = false;
+
+            // Re-check on resize
+            window.addEventListener('resize', () => {
+                isMobile = window.matchMedia('(max-width: 768px)').matches;
+                resetZoom();
+                mobileZoomed = false;
+            });
+
+            // === DESKTOP: Hover to zoom with edge safe zones ===
+            const SAFE_ZONE = 60; // px from each edge where zoom pauses
+            let desktopZoomed = false;
+
+            function activateZoom() {
+                if (desktopZoomed) return;
+                desktopZoomed = true;
+                gallery.classList.add('zoomed');
+                img.style.transform = `scale(${ZOOM_LEVEL})`;
+            }
+
+            function deactivateZoom() {
+                if (!desktopZoomed) return;
+                desktopZoomed = false;
+                gallery.classList.remove('zoomed');
+                img.style.transform = '';
+                img.style.transformOrigin = '';
+            }
+
+            gallery.addEventListener('mousemove', (e) => {
+                if (isMobile) return;
+                const rect = gallery.getBoundingClientRect();
+                const localX = e.clientX - rect.left;
+
+                // Check if cursor is in the edge safe zones (arrow areas)
+                if (localX < SAFE_ZONE || localX > rect.width - SAFE_ZONE) {
+                    // In safe zone — pause zoom, let arrows be clickable
+                    deactivateZoom();
+                } else {
+                    // In center — activate zoom and track position
+                    activateZoom();
+                    const x = (localX / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    img.style.transformOrigin = `${x}% ${y}%`;
+                }
+            });
+
+            gallery.addEventListener('mouseleave', () => {
+                if (isMobile) return;
+                deactivateZoom();
+            });
+
+            // === MOBILE: Toggle Zoom Button ===
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!isMobile) return;
+
+                    mobileZoomed = !mobileZoomed;
+
+                    if (mobileZoomed) {
+                        gallery.classList.add('zoomed');
+                        toggleBtn.classList.add('active');
+                        img.style.transform = `scale(${ZOOM_LEVEL})`;
+                        img.style.transformOrigin = 'center center';
+                    } else {
+                        gallery.classList.remove('zoomed');
+                        toggleBtn.classList.remove('active');
+                        img.style.transform = '';
+                        img.style.transformOrigin = '';
+                    }
+                });
+            }
+
+            // === MOBILE: Drag to Pan when zoomed ===
+            let isDragging = false;
+            let startX, startY, originX, originY;
+
+            gallery.addEventListener('touchstart', (e) => {
+                if (!mobileZoomed || !isMobile) return;
+                if (e.touches.length !== 1) return;
+
+                // Don't intercept taps on the toggle button — let the click event fire
+                if (toggleBtn && (e.target === toggleBtn || toggleBtn.contains(e.target))) return;
+
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+
+                // Parse current origin
+                const origin = img.style.transformOrigin || 'center center';
+                const parts = origin.split(' ');
+                originX = parseFloat(parts[0]) || 50;
+                originY = parseFloat(parts[1]) || 50;
+
+                e.preventDefault();
+            }, { passive: false });
+
+            gallery.addEventListener('touchmove', (e) => {
+                if (!isDragging || !mobileZoomed || !isMobile) return;
+                if (e.touches.length !== 1) return;
+
+                const dx = e.touches[0].clientX - startX;
+                const dy = e.touches[0].clientY - startY;
+
+                const rect = gallery.getBoundingClientRect();
+                const sensitivity = 100 / (rect.width / 2);
+
+                let newX = originX - (dx * sensitivity);
+                let newY = originY - (dy * sensitivity);
+
+                // Clamp between 0% and 100%
+                newX = Math.max(0, Math.min(100, newX));
+                newY = Math.max(0, Math.min(100, newY));
+
+                img.style.transformOrigin = `${newX}% ${newY}%`;
+
+                e.preventDefault();
+            }, { passive: false });
+
+            gallery.addEventListener('touchend', () => {
+                if (!isMobile) return;
+                isDragging = false;
+                // Update origin to current for next drag
+                const origin = img.style.transformOrigin || 'center center';
+                const parts = origin.split(' ');
+                originX = parseFloat(parts[0]) || 50;
+                originY = parseFloat(parts[1]) || 50;
+            });
         }
 
         function setLoading(isLoading) {

@@ -743,6 +743,37 @@ footer {
     transform: scale(1.2);
 }
 
+/* --- Zoom (Desktop hover) --- */
+.zoom-lens {
+    display: none;
+}
+
+.modal-gallery {
+    cursor: zoom-in;
+}
+
+.modal-gallery.zoomed {
+    overflow: hidden;
+    cursor: zoom-out;
+}
+
+.modal-gallery.zoomed .modal-image {
+    transition: transform-origin 0.05s ease;
+}
+
+/* --- Zoom Toggle Button (Mobile) --- */
+.zoom-toggle-btn {
+    display: none;
+    /* Hidden on desktop, shown via mobile media query */
+}
+
+/* Zoomed state - hide nav controls */
+.modal-gallery.zoomed .modal-nav,
+.modal-gallery.zoomed .modal-dots {
+    opacity: 0;
+    pointer-events: none;
+}
+
 /* Modal Info Typography */
 .modal-cat {
     text-transform: uppercase;
@@ -814,6 +845,53 @@ footer {
         right: 20px;
         background: #EF4444;
     }
+
+    /* Hide desktop zoom lens on mobile */
+    .zoom-lens {
+        display: none;
+    }
+
+    /* Disable desktop zoom cursor on mobile */
+    .modal-gallery {
+        cursor: default;
+    }
+
+    /* Show mobile zoom toggle - bottom right corner */
+    .zoom-toggle-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        z-index: 15;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .zoom-toggle-btn.active {
+        background: var(--accent-color);
+        border-color: white;
+        transform: scale(1.1);
+    }
+
+    /* Zoomed image on mobile */
+    .modal-gallery.zoomed {
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    .modal-gallery.zoomed .modal-image {
+        transition: transform 0.3s ease;
+    }
 }
 
 /* --- New Arrivals Section (Redesign) --- */
@@ -839,6 +917,11 @@ footer {
     /* Regular weight like editorial */
     text-transform: none;
     letter-spacing: 0;
+}
+
+/* Hide NOVO badge in the New Arrivals section (redundant there) */
+#new-grid .badge-new {
+    display: none;
 }
 
 /* 3-Column Grid for Desktop */
@@ -1005,22 +1088,6 @@ footer {
 .new-arrivals-section .badge-new {
     display: none;
     /* Example didn't show badges, or we can make it text below */
-}
-
-/* Add a text label at the top like "New" */
-.new-arrivals-section .card::after {
-    content: "NOVO";
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 8px 12px;
-    font-family: var(--font-main);
-    font-size: 0.85rem;
-    font-weight: 600;
-    background-color: #070606;
-    color: #FFFFFF;
 }
 
 /* =====================================================
@@ -1592,6 +1659,8 @@ footer {
     .filter-group select {
         width: 100%;
         flex: none;
+        padding: 14px 16px;
+        font-size: 1.1rem;
     }
 
     /* Footer Center */
