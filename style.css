@@ -1406,15 +1406,24 @@ footer {
     .video-lightbox-content {
         max-width: 100%;
         height: 100vh;
+        /* fallback for older browsers */
+        height: 100dvh;
         max-height: none;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     #video-lightbox-player {
         border-radius: 0;
+        flex: 1;
+        min-height: 0;
     }
 
     .video-lightbox-product {
         border-radius: 0;
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
     }
 
     .video-lightbox-close {
