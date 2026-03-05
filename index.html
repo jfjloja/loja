@@ -120,6 +120,24 @@
         </div>
     </section>
 
+    <!-- VIDEO SHOWCASE SECTION -->
+    <section id="video-showcase" class="video-showcase-section hidden">
+        <div class="container">
+            <div class="section-header">
+                <h2>Looks em Destaque</h2>
+            </div>
+            <div class="video-carousel-wrapper">
+                <button class="video-nav video-nav-prev" id="video-nav-prev"><i
+                        class="fa-solid fa-chevron-left"></i></button>
+                <div class="video-carousel" id="video-carousel">
+                    <!-- Video cards injected by JS -->
+                </div>
+                <button class="video-nav video-nav-next" id="video-nav-next"><i
+                        class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </section>
+
     <!-- Filter Bar & Content -->
     <main class="container">
         <div class="filter-bar">
@@ -246,6 +264,24 @@
 
                 <button class="btn-whatsapp" id="modal-buy">
                     <i class="fa-solid fa-cart-plus"></i> Adicionar ao Carrinho
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIDEO LIGHTBOX -->
+    <div id="video-lightbox" class="video-lightbox-overlay">
+        <button class="video-lightbox-close" id="video-lightbox-close"><i class="fa-solid fa-xmark"></i></button>
+        <div class="video-lightbox-content">
+            <video id="video-lightbox-player" playsinline loop></video>
+            <div class="video-lightbox-product">
+                <img class="video-lightbox-thumb" id="video-lightbox-thumb" src="" alt="">
+                <div class="video-lightbox-info">
+                    <h4 class="video-lightbox-name" id="video-lightbox-name"></h4>
+                    <p class="video-lightbox-price" id="video-lightbox-price"></p>
+                </div>
+                <button class="btn-add-cart-video" id="video-lightbox-cart">
+                    <i class="fa-solid fa-cart-plus"></i> Adicionar
                 </button>
             </div>
         </div>
@@ -525,6 +561,7 @@
             state.filtered = data;
 
             renderGrid();
+            setupVideoSection();
             setLoading(false);
         }
 
@@ -970,6 +1007,160 @@
             });
         }
 
+        // --- VIDEO SHOWCASE SECTION ---
+        function setupVideoSection() {
+            const section = document.getElementById('video-showcase');
+            const carousel = document.getElementById('video-carousel');
+            const prevBtn = document.getElementById('video-nav-prev');
+            const nextBtn = document.getElementById('video-nav-next');
+
+            if (!section || !carousel) return;
+
+            // Filter products that have a video_url
+            const videoProducts = (state.allProducts || []).filter(p => p.video_url);
+
+            if (videoProducts.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+            carousel.innerHTML = '';
+
+            const priceFormat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            videoProducts.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+
+                const thumb = p.images && p.images.length ? p.images[0] : 'https://via.placeholder.com/100?text=Foto';
+                const price = priceFormat.format(p.price || 0);
+
+                card.innerHTML = `
+                    <div class="video-card-media">
+                        <video src="${p.video_url}" muted loop playsinline preload="metadata"></video>
+                        <div class="video-play-icon"><i class="fa-solid fa-play"></i></div>
+                    </div>
+                    <div class="video-product-tag">
+                        <img class="video-product-thumb" src="${thumb}" alt="${p.name}">
+                        <div class="video-product-details">
+                            <div class="video-product-name">${p.name}</div>
+                            <div class="video-product-price">${price}</div>
+                        </div>
+                    </div>
+                `;
+
+                const video = card.querySelector('video');
+
+                // Hover to play
+                card.addEventListener('mouseenter', () => {
+                    video.play().catch(() => { });
+                });
+                card.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                });
+
+                // Click to open lightbox
+                card.addEventListener('click', () => {
+                    openVideoLightbox(p);
+                });
+
+                carousel.appendChild(card);
+            });
+
+            // Carousel navigation
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    carousel.scrollBy({ left: -240, behavior: 'smooth' });
+                });
+            }
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    carousel.scrollBy({ left: 240, behavior: 'smooth' });
+                });
+            }
+        }
+
+        // --- VIDEO LIGHTBOX ---
+        let videoLightboxProduct = null;
+
+        function openVideoLightbox(product) {
+            videoLightboxProduct = product;
+            const overlay = document.getElementById('video-lightbox');
+            const player = document.getElementById('video-lightbox-player');
+            const thumb = document.getElementById('video-lightbox-thumb');
+            const name = document.getElementById('video-lightbox-name');
+            const price = document.getElementById('video-lightbox-price');
+
+            if (!overlay || !player) return;
+
+            const priceFormat = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            player.src = product.video_url;
+            player.muted = true;
+            player.play().catch(() => { });
+
+            thumb.src = product.images && product.images.length ? product.images[0] : '';
+            name.textContent = product.name;
+            price.textContent = priceFormat.format(product.price || 0);
+
+            // Respect out-of-stock / store closed status
+            const cartBtn = document.getElementById('video-lightbox-cart');
+            if (cartBtn) {
+                const isOutOfStock = product.is_out_of_stock;
+                if (isOutOfStock || !state.storeOpen) {
+                    cartBtn.disabled = true;
+                    cartBtn.classList.add('disabled-btn');
+                    cartBtn.innerHTML = `<i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-lock'}"></i> ${isOutOfStock ? 'Esgotado' : 'Loja Fechada'}`;
+                } else {
+                    cartBtn.disabled = false;
+                    cartBtn.classList.remove('disabled-btn');
+                    cartBtn.innerHTML = '<i class="fa-solid fa-cart-plus"></i> Adicionar';
+                }
+            }
+
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoLightbox() {
+            const overlay = document.getElementById('video-lightbox');
+            const player = document.getElementById('video-lightbox-player');
+
+            if (overlay) overlay.classList.remove('open');
+            if (player) {
+                player.pause();
+                player.src = '';
+            }
+            document.body.style.overflow = '';
+            videoLightboxProduct = null;
+        }
+
+        // Close button
+        document.getElementById('video-lightbox-close')?.addEventListener('click', closeVideoLightbox);
+
+        // Close on overlay click
+        document.getElementById('video-lightbox')?.addEventListener('click', (e) => {
+            if (e.target.id === 'video-lightbox') closeVideoLightbox();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('video-lightbox')?.classList.contains('open')) {
+                closeVideoLightbox();
+            }
+        });
+
+        // Add to cart from video lightbox
+        document.getElementById('video-lightbox-cart')?.addEventListener('click', () => {
+            if (videoLightboxProduct && !videoLightboxProduct.is_out_of_stock && state.storeOpen) {
+                const product = videoLightboxProduct;
+                closeVideoLightbox();
+                openSizeModal(product);
+            }
+        });
+
         function setLoading(isLoading) {
             const loader = document.getElementById('loading');
             if (!loader) return;
@@ -1044,6 +1235,7 @@
             `).join('');
 
             modal.classList.add('open');
+            modal.style.zIndex = '4000';
         }
 
         function closeSizeModal() {
@@ -1052,6 +1244,12 @@
         }
 
         function confirmAddToCart() {
+            // Block if store closed while modal was open
+            if (!state.storeOpen) {
+                closeSizeModal();
+                return;
+            }
+
             const product = state.sizeModal.activeProduct;
             if (!product) return;
 
@@ -1436,6 +1634,13 @@
             // Re-render grid if state changed
             if (wasOpen !== state.storeOpen) {
                 renderGrid();
+
+                // Close any open overlays that may have stale button states
+                if (!state.storeOpen) {
+                    if (typeof closeVideoLightbox === 'function') closeVideoLightbox();
+                    if (typeof closeModal === 'function') closeModal();
+                    if (typeof closeSizeModal === 'function') closeSizeModal();
+                }
             }
 
             // Update checkout button

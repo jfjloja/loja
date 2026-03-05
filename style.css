@@ -602,7 +602,7 @@ footer {
     /* top/left/right/bottom: 0 */
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(5px);
-    z-index: 1000;
+    z-index: 4000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -900,7 +900,6 @@ footer {
     padding: 60px 0;
     background-color: #CAAC89;
     /* Secondary color background */
-    margin-bottom: 40px;
 }
 
 .new-arrivals-section .section-header {
@@ -1088,6 +1087,444 @@ footer {
 .new-arrivals-section .badge-new {
     display: none;
     /* Example didn't show badges, or we can make it text below */
+}
+
+/* =====================================================
+   VIDEO SHOWCASE SECTION
+   ===================================================== */
+
+.video-showcase-section {
+    width: 100%;
+    padding: 60px 0;
+    background-color: #fff;
+}
+
+.video-showcase-section .section-header {
+    display: none;
+}
+
+.video-showcase-section .section-header h2 {
+    font-size: 1.5rem;
+    color: #111;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* Carousel Wrapper */
+.video-carousel-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.video-carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 4px 0;
+}
+
+.video-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+/* Navigation Arrows */
+.video-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 1.3rem;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.video-nav:hover {
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.video-nav-prev {
+    left: 10px;
+}
+
+.video-nav-next {
+    right: 10px;
+}
+
+/* Video Card */
+.video-card {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    background: #f0f0f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.video-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Video Container (9:16 portrait) */
+.video-card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 14;
+    overflow: hidden;
+    background: #000;
+}
+
+.video-card-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Play icon overlay */
+.video-play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.video-card:hover .video-play-icon {
+    opacity: 0;
+}
+
+/* Product Info Tag at Bottom */
+.video-product-tag {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #fff;
+}
+
+.video-product-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #eee;
+}
+
+.video-product-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.video-product-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.video-product-price {
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* =====================================================
+   VIDEO LIGHTBOX
+   ===================================================== */
+
+.video-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.video-lightbox-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.video-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.2s ease;
+}
+
+.video-lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.video-lightbox-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 420px;
+    height: 90vh;
+    max-height: 800px;
+}
+
+#video-lightbox-player {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+    background: #000;
+}
+
+.video-lightbox-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #1a1a1a;
+    border-radius: 0 0 12px 12px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.video-lightbox-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.video-lightbox-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.video-lightbox-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.video-lightbox-price {
+    font-size: 0.8rem;
+    color: #10B981;
+    font-weight: 600;
+    margin: 2px 0 0 0;
+}
+
+.btn-add-cart-video {
+    background: #10B981;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.btn-add-cart-video:hover {
+    filter: brightness(1.1);
+}
+
+/* Mobile responsive for video section */
+@media (max-width: 768px) {
+    .video-showcase-section {
+        padding: 40px 0;
+    }
+
+    .video-card {
+        flex: 0 0 240px;
+    }
+
+    .video-card-media {
+        aspect-ratio: 9 / 14;
+    }
+
+    .video-nav {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .video-lightbox-content {
+        max-width: 100%;
+        height: 100vh;
+        max-height: none;
+    }
+
+    #video-lightbox-player {
+        border-radius: 0;
+    }
+
+    .video-lightbox-product {
+        border-radius: 0;
+    }
+
+    .video-lightbox-close {
+        top: 10px;
+        right: 10px;
+    }
+}
+
+/* =====================================================
+   ADMIN VIDEO TAB STYLES
+   ===================================================== */
+
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.video-admin-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+}
+
+.video-admin-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.video-admin-card .card-header img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.video-admin-card .card-header .card-title {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.video-admin-card .card-header .card-price {
+    font-size: 0.85rem;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.video-admin-preview {
+    background: #f5f5f5;
+    padding: 12px;
+    text-align: center;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-admin-preview video {
+    width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
+.video-admin-preview .no-video {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.video-admin-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+}
+
+.video-admin-actions button {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-upload-video {
+    background: var(--accent-color);
+    color: white;
+}
+
+.btn-upload-video:hover {
+    filter: brightness(1.1);
+}
+
+.btn-remove-video {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-remove-video:hover {
+    background: #fecaca;
 }
 
 /* =====================================================
@@ -1624,7 +2061,11 @@ footer {
     }
 
     /* Section Spacing Reduction */
-    .new-arrivals-section,
+    .new-arrivals-section {
+        padding: 30px 0;
+        margin-bottom: 0;
+    }
+
     footer,
     .product-grid {
         padding: 30px 0;
@@ -1777,6 +2218,21 @@ footer {
 .admin-tab[data-tab="orders"].active {
     background: #b45309;
     box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4);
+}
+
+/* Videos Tab - Purple */
+.admin-tab[data-tab="videos"] {
+    background: #8B5CF6;
+}
+
+.admin-tab[data-tab="videos"]:hover {
+    background: #7C3AED;
+    transform: translateY(-2px);
+}
+
+.admin-tab[data-tab="videos"].active {
+    background: #6D28D9;
+    box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
 }
 
 /* Tab Content */
