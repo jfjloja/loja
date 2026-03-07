@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JFJ|Loja</title>
+    <title>Loja Moderna | Moda Premium</title>
 
     <!-- Google Fonts: Outfit (Clean, Modern) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -273,7 +273,7 @@
     <div id="video-lightbox" class="video-lightbox-overlay">
         <button class="video-lightbox-close" id="video-lightbox-close"><i class="fa-solid fa-xmark"></i></button>
         <div class="video-lightbox-content">
-            <video id="video-lightbox-player" playsinline loop></video>
+            <video id="video-lightbox-player" playsinline webkit-playsinline disablePictureInPicture loop></video>
             <div class="video-lightbox-product">
                 <img class="video-lightbox-thumb" id="video-lightbox-thumb" src="" alt="">
                 <div class="video-lightbox-info">
@@ -1038,7 +1038,7 @@
 
                 card.innerHTML = `
                     <div class="video-card-media">
-                        <video src="${p.video_url}" poster="${thumb}" muted loop playsinline preload="auto"></video>
+                        <video src="${p.video_url}" poster="${thumb}" muted loop playsinline webkit-playsinline disablePictureInPicture preload="metadata"></video>
                         <div class="video-play-icon"><i class="fa-solid fa-play"></i></div>
                     </div>
                     <div class="video-product-tag">
