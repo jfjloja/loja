@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JFJ|Loja</title>
+    <title>Loja Moderna | Moda Premium</title>
 
     <!-- Google Fonts: Outfit (Clean, Modern) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1660,39 +1660,39 @@
             const minutes = brTime.getMinutes();
             const currentMinutes = hours * 60 + minutes;
 
-            // Store is OPEN: Monday (1) 00:00 to Friday (5) 10:00
-            // Store is CLOSED: Friday (5) 10:01 to Sunday (0) 23:59
+            // Store is OPEN: Monday (1) 00:00 to Thursday (4) 11:00
+            // Store is CLOSED: Thursday (4) 11:01 to Sunday (0) 23:59
             let isOpen = false;
             let hoursUntilClose = null;
             let closeTime = null;
 
-            if (day >= 1 && day <= 4) {
-                // Monday to Thursday: fully open
+            if (day >= 1 && day <= 3) {
+                // Monday to Wednesday: fully open
                 isOpen = true;
 
-                // Calculate hours until Friday 10:00 AM
-                const daysUntilFriday = 5 - day;
-                const minutesUntilClose = (daysUntilFriday * 24 * 60) + (10 * 60) - currentMinutes;
+                // Calculate hours until Thursday 11:00 AM
+                const daysUntilThursday = 4 - day;
+                const minutesUntilClose = (daysUntilThursday * 24 * 60) + (11 * 60) - currentMinutes;
                 hoursUntilClose = minutesUntilClose / 60;
 
                 // Close time for countdown
                 closeTime = new Date(brTime);
-                closeTime.setDate(closeTime.getDate() + daysUntilFriday);
-                closeTime.setHours(10, 0, 0, 0);
-            } else if (day === 5) {
-                // Friday
-                if (currentMinutes <= 600) { // 10:00 = 600 minutes
+                closeTime.setDate(closeTime.getDate() + daysUntilThursday);
+                closeTime.setHours(11, 0, 0, 0);
+            } else if (day === 4) {
+                // Thursday
+                if (currentMinutes <= 660) { // 11:00 = 660 minutes
                     isOpen = true;
-                    const minutesUntilClose = 600 - currentMinutes;
+                    const minutesUntilClose = 660 - currentMinutes;
                     hoursUntilClose = minutesUntilClose / 60;
 
                     closeTime = new Date(brTime);
-                    closeTime.setHours(10, 0, 0, 0);
+                    closeTime.setHours(11, 0, 0, 0);
                 } else {
                     isOpen = false;
                 }
             } else {
-                // Saturday (6) or Sunday (0): closed
+                // Friday (5), Saturday (6) or Sunday (0): closed
                 isOpen = false;
             }
 
