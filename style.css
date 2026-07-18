@@ -254,6 +254,11 @@ header {
     margin-bottom: 60px;
 }
 
+/* Reserve space while products load so content below doesn't jump (CLS) */
+.product-grid.is-loading {
+    min-height: 70vh;
+}
+
 /* --- Product Card --- */
 .card {
     background: var(--card-bg);
