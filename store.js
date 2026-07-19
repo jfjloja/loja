@@ -29,7 +29,10 @@ function escapeHtml(v) {
 function optimizeImg(url, width, quality = 75) {
     if (typeof url !== 'string' || !url.includes('/storage/v1/object/public/')) return url;
     const resized = url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
-    return `${resized}${resized.includes('?') ? '&' : '?'}width=${width}&quality=${quality}`;
+    // resize=contain keeps the source aspect ratio. Without it, width-only requests
+    // squash the image (Supabase keeps the original height), which CSS object-fit then
+    // crops into a distorted "zoomed" result.
+    return `${resized}${resized.includes('?') ? '&' : '?'}width=${width}&resize=contain&quality=${quality}`;
 }
 
 // --- GLOBAL STATE ---
