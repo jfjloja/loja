@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja Moderna | Moda Premium</title>
+    <title>JFJ|LOJA</title>
 
     <!-- Preconnects -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,7 +38,7 @@
         // Check for Auth tokens in Hash URL (Standard)
         const authHash = window.location.hash;
         if (authHash && (authHash.includes('access_token') || authHash.includes('type=recovery') || authHash.includes('type=invite'))) {
-            location.replace('admin.html' + authHash);
+            location.replace('https://admin.jfjloja.com/' + authHash);
         }
     </script>
 </head>
