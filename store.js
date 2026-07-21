@@ -199,6 +199,9 @@ async function initData() {
         await new Promise(r => setTimeout(r, 600));
     }
 
+    // Hide out-of-stock products from the storefront (they remain manageable in admin)
+    data = data.filter(p => !p.is_out_of_stock);
+
     state.allProducts = data;
     state.filtered = data;
 
