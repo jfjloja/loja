@@ -3512,6 +3512,88 @@ footer {
     display: block;
 }
 
+/* Admin Card - Out of Stock Visual Treatment */
+.admin-card-out-of-stock {
+    opacity: 0.65;
+    border: 2px solid #ef4444 !important;
+    transition: opacity 0.3s ease;
+}
+
+.admin-card-out-of-stock:hover {
+    opacity: 0.85;
+}
+
+.admin-card-out-of-stock .card-image {
+    filter: grayscale(40%);
+}
+
+/* Admin Card Badges */
+.admin-badge-out,
+.admin-badge-sale,
+.admin-badge-new {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #fff;
+    padding: 5px 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 6px;
+    z-index: 10;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.admin-badge-out {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.admin-badge-sale {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.admin-badge-new {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+/* Admin Filters Row */
+.admin-filters-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+/* Admin Stock Filter Dropdown */
+.admin-stock-filter {
+    padding: 10px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+    color: #374151;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 170px;
+    appearance: auto;
+}
+
+.admin-stock-filter:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.admin-stock-filter:hover {
+    border-color: #d1d5db;
+    background: #f3f4f6;
+}
+
 .gallery-remove {
     position: absolute;
     top: 2px;
