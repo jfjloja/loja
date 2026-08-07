@@ -1332,52 +1332,9 @@ function applyStoreStatusUI(emergencyClosed) {
 }
 
 function getScheduleStatus() {
-    // Get current time in UTC-3 (America/Sao_Paulo)
-    const now = new Date();
-    const brTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-
-    const day = brTime.getDay(); // 0=Sun, 1=Mon, ... 5=Fri, 6=Sat
-    const hours = brTime.getHours();
-    const minutes = brTime.getMinutes();
-    const currentMinutes = hours * 60 + minutes;
-
-    // Store is OPEN: Monday (1) 00:00 to Thursday (4) 11:00
-    // Store is CLOSED: Thursday (4) 11:01 to Sunday (0) 23:59
-    let isOpen = false;
-    let hoursUntilClose = null;
-    let closeTime = null;
-
-    if (day >= 1 && day <= 3) {
-        // Monday to Wednesday: fully open
-        isOpen = true;
-
-        // Calculate hours until Thursday 11:00 AM
-        const daysUntilThursday = 4 - day;
-        const minutesUntilClose = (daysUntilThursday * 24 * 60) + (11 * 60) - currentMinutes;
-        hoursUntilClose = minutesUntilClose / 60;
-
-        // Close time for countdown
-        closeTime = new Date(brTime);
-        closeTime.setDate(closeTime.getDate() + daysUntilThursday);
-        closeTime.setHours(11, 0, 0, 0);
-    } else if (day === 4) {
-        // Thursday
-        if (currentMinutes <= 660) { // 11:00 = 660 minutes
-            isOpen = true;
-            const minutesUntilClose = 660 - currentMinutes;
-            hoursUntilClose = minutesUntilClose / 60;
-
-            closeTime = new Date(brTime);
-            closeTime.setHours(11, 0, 0, 0);
-        } else {
-            isOpen = false;
-        }
-    } else {
-        // Friday (5), Saturday (6) or Sunday (0): closed
-        isOpen = false;
-    }
-
-    return { isOpen, hoursUntilClose, closeTime };
+    // Store is open 24/7 — no automatic schedule closing.
+    // The store can still be closed manually via the emergency toggle in admin.
+    return { isOpen: true, hoursUntilClose: null, closeTime: null };
 }
 
 function startCountdown(closeTime) {
