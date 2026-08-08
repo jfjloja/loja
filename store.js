@@ -67,6 +67,7 @@ const MOCK_DATA = [
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🚀 App Starting...");
 
+    initTrackingFromSettings();
     try { initCarousel(); } catch (err) { console.error("Banner Init Error:", err); }
     initData();
     setupFilters();
@@ -78,6 +79,24 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
     initStoreStatus();
 });
+
+// --- ANALYTICS: load pixel IDs from settings, then init Meta/Google + fire PageView ---
+async function initTrackingFromSettings() {
+    if (typeof initTracking !== 'function') return; // tracking.js not loaded
+    try {
+        if (sbClient) {
+            const { data } = await sbClient
+                .from('store_settings')
+                .select('meta_pixel_id, google_tag_id')
+                .limit(1)
+                .single();
+            if (data) { initTracking(data); return; }
+        }
+    } catch (err) {
+        console.warn('Tracking settings load failed:', err);
+    }
+    initTracking({}); // no pixels configured — safe no-op
+}
 
 // --- CAROUSEL LOGIC ---
 function initCarousel() {
@@ -930,6 +949,7 @@ function confirmAddToCart() {
 
     const inputs = document.querySelectorAll('.size-qty-input');
     let addedAny = false;
+    let addedQty = 0;
 
     inputs.forEach(input => {
         const qty = parseInt(input.value) || 0;
@@ -938,12 +958,19 @@ function confirmAddToCart() {
         if (qty > 0) {
             addToCart(product, size, qty);
             addedAny = true;
+            addedQty += qty;
         }
     });
 
     if (addedAny) {
         closeSizeModal();
         updateCartUI();
+        // Analytics: AddToCart (Meta + Google)
+        if (typeof trackEvent === 'function') {
+            trackEvent('AddToCart', {
+                contents: [{ id: product.id, name: product.name, quantity: addedQty, price: product.price }]
+            });
+        }
         // Show brief feedback
         const cartBtn = document.getElementById('cart-btn');
         cartBtn.classList.add('pulse');
@@ -1091,6 +1118,13 @@ function openOrderModal() {
     document.getElementById('order-modal').classList.add('open');
     document.getElementById('order-error').classList.add('hidden');
     document.getElementById('order-success').classList.add('hidden');
+
+    // Analytics: InitiateCheckout (Meta + Google) — whole cart
+    if (typeof trackEvent === 'function') {
+        trackEvent('InitiateCheckout', {
+            contents: state.cart.map(i => ({ id: i.product_id, name: i.product_name, quantity: i.quantity, price: i.price }))
+        });
+    }
 }
 
 function closeOrderModal() {

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JFJ Confecções | Links</title>
+    <meta name="description" content="Links oficiais da JFJ Confecções — loja, grupo de atacado e atendimento.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://awcmwwhxtwdwfqhtahec.supabase.co">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="tracking.js" defer></script>
+
+    <style>
+        :root {
+            --bg: #0b0b0d;
+            --bg-2: #141417;
+            --card: #1b1b1f;
+            --text: #f5f3ef;
+            --muted: #a1a1aa;
+            --accent: #CAAC89;
+            --accent-hover: #b89a78;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', system-ui, sans-serif;
+            background:
+                radial-gradient(1200px 600px at 50% -10%, rgba(202, 172, 137, 0.14), transparent 60%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            justify-content: center;
+            padding: 48px 20px 40px;
+        }
+
+        .wrap {
+            width: 100%;
+            max-width: 460px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(145deg, var(--accent), var(--accent-hover));
+            color: #1a1512;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 30px rgba(202, 172, 137, 0.28);
+            border: 3px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .name {
+            margin-top: 18px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .name .gold { color: var(--accent); }
+
+        .tagline {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .links {
+            margin-top: 34px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .link-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            padding: 17px 20px;
+            border-radius: var(--radius);
+            background: var(--card);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1.02rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        .link-btn .ico { width: 22px; text-align: center; color: var(--accent); font-size: 1.15rem; flex-shrink: 0; }
+        .link-btn .label { flex: 1; }
+        .link-btn .chev { color: var(--muted); font-size: 0.85rem; }
+        .link-btn:hover { transform: translateY(-2px); border-color: rgba(202, 172, 137, 0.5); background: var(--bg-2); }
+        .link-btn:active { transform: translateY(0); }
+
+        /* Highlighted (pulsing) button — used for the Loja button */
+        .link-btn.highlight {
+            background: linear-gradient(145deg, var(--accent), var(--accent-hover));
+            color: #1a1512;
+            border-color: transparent;
+            animation: pulse 2s infinite;
+        }
+        .link-btn.highlight .ico,
+        .link-btn.highlight .chev { color: #1a1512; }
+        .link-btn.highlight:hover { background: linear-gradient(145deg, #d8bd9e, var(--accent)); }
+
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(202, 172, 137, 0.55); }
+            70%  { box-shadow: 0 0 0 16px rgba(202, 172, 137, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(202, 172, 137, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .link-btn.highlight { animation: none; }
+        }
+
+        .foot {
+            margin-top: 40px;
+            color: #6b6b73;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        .foot .gold { color: var(--accent); }
+    </style>
+</head>
+
+<body>
+    <main class="wrap">
+        <div class="avatar">JFJ</div>
+        <h1 class="name">JFJ <span class="gold">CONFECÇÕES</span></h1>
+        <p class="tagline">Moda em atacado • Peças a partir de 10 unidades</p>
+
+        <nav class="links" id="links" aria-label="Links">
+            <!-- Buttons injected by JS -->
+        </nav>
+
+        <p class="foot">&copy; <span id="year"></span> JFJ <span class="gold">Confecções</span></p>
+    </main>
+
+    <script>
+        (function () {
+            const SUPABASE_URL = 'https://awcmwwhxtwdwfqhtahec.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3Y213d2h4dHdkd2ZxaHRhaGVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwOTAyNDksImV4cCI6MjA4NTY2NjI0OX0.TGYfoqV5H7VPjYFRk-yPh5cPzr2pL5cBXtJy_5kRsCA';
+
+            // Shown until the admin sets their own (also the fallback if the DB has no links yet)
+            const DEFAULT_LINKS = [
+                { label: 'Loja', url: 'https://jfjloja.com', highlight: true },
+                { label: 'Grupo Atacadista', url: '', highlight: false },
+                { label: 'Falar no WhatsApp', url: 'https://wa.me/5581995612912', highlight: false }
+            ];
+
+            document.getElementById('year').textContent = new Date().getFullYear();
+
+            function escapeHtml(v) {
+                return String(v == null ? '' : v)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
+
+            // Pick an icon from the label / url so the admin only has to enter text + link
+            function iconFor(link) {
+                const s = ((link.label || '') + ' ' + (link.url || '')).toLowerCase();
+                if (s.includes('whats') || s.includes('wa.me')) return 'fa-brands fa-whatsapp';
+                if (s.includes('grupo') || s.includes('chat.whatsapp')) return 'fa-solid fa-users';
+                if (s.includes('loja') || s.includes('jfjloja') || s.includes('produt')) return 'fa-solid fa-bag-shopping';
+                if (s.includes('insta')) return 'fa-brands fa-instagram';
+                if (s.includes('catalog') || s.includes('catálogo')) return 'fa-solid fa-book-open';
+                return 'fa-solid fa-link';
+            }
+
+            function isSafeUrl(u) {
+                return typeof u === 'string' && /^(https?:|mailto:|tel:)/i.test(u.trim());
+            }
+
+            function render(links) {
+                const box = document.getElementById('links');
+                box.innerHTML = links.map(function (l) {
+                    const safe = isSafeUrl(l.url);
+                    const href = safe ? escapeHtml(l.url.trim()) : '#';
+                    const cls = 'link-btn' + (l.highlight ? ' highlight' : '');
+                    const target = safe ? ' target="_blank" rel="noopener"' : ' aria-disabled="true"';
+                    return '<a class="' + cls + '" href="' + href + '"' + target + ' data-label="' + escapeHtml(l.label) + '">'
+                        + '<span class="ico"><i class="' + iconFor(l) + '"></i></span>'
+                        + '<span class="label">' + escapeHtml(l.label) + '</span>'
+                        + '<span class="chev"><i class="fa-solid fa-chevron-right"></i></span>'
+                        + '</a>';
+                }).join('');
+            }
+
+            async function boot() {
+                // Render defaults immediately so the page never looks empty
+                render(DEFAULT_LINKS);
+
+                try {
+                    if (typeof supabase === 'undefined') return;
+                    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    const { data } = await client.from('store_settings').select('*').limit(1).single();
+                    if (data) {
+                        if (Array.isArray(data.links) && data.links.length) render(data.links);
+                        if (typeof initTracking === 'function') {
+                            initTracking({ meta_pixel_id: data.meta_pixel_id, google_tag_id: data.google_tag_id });
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Links/settings load failed, using defaults:', err);
+                }
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+            else boot();
+        })();
+    </script>
+</body>
+
+</html>

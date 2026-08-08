@@ -3674,3 +3674,188 @@ footer {
     background: #6b7280;
     transform: none;
 }
+
+/* =====================================================
+   CONFIG TAB — Bio links + marketing pixels
+   ===================================================== */
+.config-card {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    max-width: 820px;
+    box-shadow: var(--shadow-sm);
+}
+
+.config-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.config-card-head h2 {
+    font-size: 1.2rem;
+    color: var(--primary-text);
+}
+
+.config-card-head h2 i {
+    color: var(--accent-color);
+    margin-right: 6px;
+}
+
+.config-link-preview {
+    font-size: 0.85rem;
+    color: var(--accent-hover);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.config-link-preview:hover {
+    text-decoration: underline;
+}
+
+.config-hint {
+    color: #6b7280;
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+
+.bio-links-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.bio-link-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f9fafb;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
+.bio-grip {
+    color: #cbd5e1;
+    flex-shrink: 0;
+}
+
+.bio-link-row input[type="text"] {
+    padding: 9px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: var(--font-main);
+    font-size: 0.92rem;
+    color: var(--primary-text);
+    background: #fff;
+}
+
+.bio-link-row .bio-label {
+    flex: 0 0 34%;
+}
+
+.bio-link-row .bio-url {
+    flex: 1;
+    min-width: 0;
+}
+
+.bio-highlight-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    color: #4b5563;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+
+.bio-highlight-label input {
+    accent-color: var(--accent-color);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.bio-remove {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.bio-remove:hover {
+    background: #fecaca;
+}
+
+.config-field {
+    margin-bottom: 16px;
+}
+
+.config-field label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary-text);
+    margin-bottom: 6px;
+}
+
+.config-field input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: var(--font-main);
+    font-size: 0.95rem;
+    color: var(--primary-text);
+    background: #fff;
+}
+
+.config-field input:focus,
+.bio-link-row input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.config-status {
+    font-size: 0.9rem;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin: 4px 0 14px;
+}
+
+.config-status.ok {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.config-status.err {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+#tab-config .btn-secondary {
+    margin-bottom: 18px;
+}
+
+@media (max-width: 640px) {
+    .bio-link-row {
+        flex-wrap: wrap;
+    }
+
+    .bio-link-row .bio-label,
+    .bio-link-row .bio-url {
+        flex: 1 1 100%;
+    }
+}
