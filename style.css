@@ -2258,6 +2258,21 @@ footer {
     box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4);
 }
 
+/* Config Tab - Slate */
+.admin-tab[data-tab="config"] {
+    background: #64748B;
+}
+
+.admin-tab[data-tab="config"]:hover {
+    background: #475569;
+    transform: translateY(-2px);
+}
+
+.admin-tab[data-tab="config"].active {
+    background: #334155;
+    box-shadow: 0 6px 15px rgba(100, 116, 139, 0.4);
+}
+
 /* Tab Content */
 .tab-content {
     display: none;
