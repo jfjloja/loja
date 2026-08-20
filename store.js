@@ -478,6 +478,24 @@ function openModal(product) {
 
     updateModalImage();
 
+    // --- Temporary pants price-adjustment notice (Aug 20 – Aug 31, 2026) ---
+    const noticeEl = document.getElementById('pants-price-notice');
+    if (noticeEl) {
+        const now = new Date();
+        // Use Brazil timezone (America/Sao_Paulo, UTC-3) for date boundaries
+        const brNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+        const showStart = new Date(2026, 7, 20, 0, 0, 0);  // Aug 20, 2026 00:00
+        const showEnd   = new Date(2026, 7, 31, 23, 59, 59); // Aug 31, 2026 23:59:59
+        const isPants = (product.category || '').trim().toLowerCase() === 'calças';
+        const inDateRange = brNow >= showStart && brNow <= showEnd;
+
+        if (isPants && inDateRange) {
+            noticeEl.classList.remove('hidden');
+        } else {
+            noticeEl.classList.add('hidden');
+        }
+    }
+
     modal.classList.add('open');
     modal.style.zIndex = '4000';
     document.body.style.overflow = 'hidden';
